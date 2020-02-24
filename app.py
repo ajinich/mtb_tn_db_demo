@@ -74,6 +74,7 @@ def unknown_essential_xy(TnSeq_screen, rand_param=0.6):
 
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+server = app.server
 
 navbar = dbc.NavbarSimple([
     dbc.NavItem(dbc.NavLink('Analyze datasets',
@@ -578,4 +579,4 @@ def print_gene_metadata(sel_gene):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
