@@ -23,7 +23,7 @@ main_data = pd.read_csv(
 cogs_df = pd.read_csv(
     'https://raw.githubusercontent.com/anishazaveri/mtb_tn_db_demo/master/data/annotations/all_cogs.csv')
 cogs_desc = pd.read_csv(
-    'https://github.com/anishazaveri/mtb_tn_db_demo/blob/master/data/annotations/cog_names.csv', header=0, index_col=0, squeeze=True)
+    'https://raw.githubusercontent.com/anishazaveri/mtb_tn_db_demo/master/data/annotations/cog_names.csv', header=0, index_col=0, squeeze=True)
 
 unique_expts = list(main_data['Expt'].unique())
 unique_Rvs = sorted(list(main_data['Rv_ID'].unique()))
@@ -32,7 +32,7 @@ main_data['id'] = main_data['Rv_ID']
 main_data.set_index('id', inplace=True, drop=False)
 # print("Main", main_data.head())
 df_uk = pd.read_csv(
-    'https://github.com/anishazaveri/mtb_tn_db_demo/blob/master/data/annotations/unknown_essentials/unknown_ALL_levels_essential_scores.csv')
+    'https://raw.githubusercontent.com/anishazaveri/mtb_tn_db_demo/master/data/annotations/unknown_essentials/unknown_ALL_levels_essential_scores.csv')
 df_uk = df_uk[['Rv_ID', 'gene_name', 'UK_score_4']]
 
 
@@ -501,7 +501,7 @@ def update_cog(sel_dataset, sel_cog, log2FC, qval):
 def update_bubble(sel_dataset):
     uk_rd, q_rd, color_list, rv_ids = unknown_essential_xy(
         sel_dataset)
-    print(color_list)
+    # print(color_list)
     return {
         'data': [
             go.Scatter(
