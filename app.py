@@ -310,8 +310,8 @@ def update_download_dataset(sel_dataset):
     dff = main_data[main_data['Expt'] == sel_dataset]
     dff = dff.drop(columns=['id', 'Expt'])
     csv_string = dff.to_csv(encoding='utf-8', index=False)
-    csv_string = "data:text/csv;charset=utf-8," +
-    urllib.parse.quote(csv_string)
+    csv_string = "data:text/csv;charset=utf-8," + \
+        urllib.parse.quote(csv_string)
     download_string = sel_dataset + '.csv'
     return csv_string, download_string
 
