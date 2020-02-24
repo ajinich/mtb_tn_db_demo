@@ -31,58 +31,60 @@ unique_genes = sorted(list(main_data['gene_name'].unique()))
 main_data['id'] = main_data['Rv_ID']
 main_data.set_index('id', inplace=True, drop=False)
 # print("Main", main_data.head())
-df_uk = pd.read_csv('https://github.com/anishazaveri/mtb_tn_db_demo/blob/master/data/annotations/unknown_essentials/unknown_ALL_levels_essential_scores.csv'))
-df_uk=df_uk[['Rv_ID', 'gene_name', 'UK_score_4']]
+df_uk = pd.read_csv(
+    'https://github.com/anishazaveri/mtb_tn_db_demo/blob/master/data/annotations/unknown_essentials/unknown_ALL_levels_essential_scores.csv')
+df_uk = df_uk[['Rv_ID', 'gene_name', 'UK_score_4']]
+
 
 def discretize_q_values(row):
-    q_val=row['q-val']
+    q_val = row['q-val']
     if q_val < 0.01:
-        q_val_d=3
+        q_val_d = 3
     elif q_val < 0.05:
-        q_val_d=2
+        q_val_d = 2
     else:
-        q_val_d=1
+        q_val_d = 1
     return q_val_d
 
 
-def unknown_essential_xy(TnSeq_screen, rand_param = 0.6):
+def unknown_essential_xy(TnSeq_screen, rand_param=0.6):
     # Grab data for a single TnSeq screen
-    selected_data=main_data[main_data['Expt'] == TnSeq_screen]
-    selected_data['q_val_D']=selected_data.apply(discretize_q_values, 1)
+    selected_data = main_data[main_data['Expt'] == TnSeq_screen]
+    selected_data['q_val_D'] = selected_data.apply(discretize_q_values, 1)
 
     # Merge with unknowns:
-    df_vis=selected_data.merge(df_uk, on = ['Rv_ID'], how = 'inner')
+    df_vis = selected_data.merge(df_uk, on=['Rv_ID'], how='inner')
 
     # Get x-y datasets:
-    rv_ids=df_vis.Rv_ID.values
-    uk_list=np.array(df_vis.UK_score_4)
-    q_list=np.array(df_vis.q_val_D)
+    rv_ids = df_vis.Rv_ID.values
+    uk_list = np.array(df_vis.UK_score_4)
+    q_list = np.array(df_vis.q_val_D)
 
     # randomize:
-    uk_rd=np.array([uk + rand_param * random() -
+    uk_rd = np.array([uk + rand_param * random() -
                       rand_param / 2 for uk in uk_list])
-    q_rd=np.array([q + rand_param * random() -
+    q_rd = np.array([q + rand_param * random() -
                      rand_param / 2 for q in q_list])
 
     # color the unknown-essentials differently:
-    color_list=np.array(['#585858']*df_vis.shape[0])
+    color_list = np.array(['#585858']*df_vis.shape[0])
     color_list[df_vis[(df_vis.q_val_D == 3) &
-                      (df_vis.UK_score_4 == 4)].index]='#2b7bba'
+                      (df_vis.UK_score_4 == 4)].index] = '#2b7bba'
     return uk_rd, q_rd, color_list, rv_ids
 
 
-app=dash.Dash(__name__, external_stylesheets = external_stylesheets)
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
-navbar=dbc.NavbarSimple([
+navbar = dbc.NavbarSimple([
     dbc.NavItem(dbc.NavLink('Analyze datasets',
                             active=True, href=app.get_relative_path('/analyze_datasets'))),
     dbc.NavItem(dbc.NavLink('Analyze genes',
                             href=app.get_relative_path('/analyze_genes'))),
     dbc.NavItem(dbc.NavLink('About', active=True,
                             href=app.get_relative_path('/about')))
-], brand = "MtbTnDB demo", color = 'primary', light = True)
+], brand="MtbTnDB demo", color='primary', light=True)
 
-analyze_datasets=html.Div([dbc.Row([html.Label('Pick a dataset')]),
+analyze_datasets = html.Div([dbc.Row([html.Label('Pick a dataset')]),
                              dbc.Row([
                                  html.Br(),
                                  html.Br(),
@@ -207,7 +209,7 @@ analyze_datasets=html.Div([dbc.Row([html.Label('Pick a dataset')]),
     ], justify='center')
 ])
 
-analyze_genes=html.Div([
+analyze_genes = html.Div([
     dbc.Row([html.Label('Pick a gene')]),
     dbc.Row([
         dbc.Col([
@@ -250,7 +252,7 @@ analyze_genes=html.Div([
                  style_as_list_view=True)
 ])
 
-about=html.Div([
+about = html.Div([
     html.Span(
         'This is a demo of MtbTnDB, a database of both published and unpublished Tn-library screens from '),
     html.I('Mycobacterium tuberculosis'),
@@ -274,15 +276,15 @@ about=html.Div([
     html.I('to whom correspondance should be addressed')
 ])
 
-app.layout=html.Div(
+app.layout = html.Div(
     [
         dcc.Location(id="url", refresh=False),
         navbar,
         dbc.Container(id="content", style={"padding": "20px"}),
     ])
 
-app.config.suppress_callback_exceptions=True
-app.scripts.config.serve_locally=True
+app.config.suppress_callback_exceptions = True
+app.scripts.config.serve_locally = True
 
 
 @app.callback(Output('loading_dataset_table', "children"))
@@ -290,7 +292,7 @@ app.scripts.config.serve_locally=True
 @app.callback(Output("content", "children"),
               [Input("url", "pathname")])
 def display_content(path):
-    page_name=app.strip_relative_path(path)
+    page_name = app.strip_relative_path(path)
     if page_name == 'analyze_datasets':
         return analyze_datasets
     if page_name == "analyze_genes":
@@ -305,12 +307,12 @@ def display_content(path):
 ],
     [Input('sel_dataset', 'value')])
 def update_download_dataset(sel_dataset):
-    dff=main_data[main_data['Expt'] == sel_dataset]
-    dff=dff.drop(columns = ['id', 'Expt'])
-    csv_string=dff.to_csv(encoding = 'utf-8', index = False)
-    csv_string="data:text/csv;charset=utf-8," +
-        urllib.parse.quote(csv_string)
-    download_string=sel_dataset + '.csv'
+    dff = main_data[main_data['Expt'] == sel_dataset]
+    dff = dff.drop(columns=['id', 'Expt'])
+    csv_string = dff.to_csv(encoding='utf-8', index=False)
+    csv_string = "data:text/csv;charset=utf-8," +
+    urllib.parse.quote(csv_string)
+    download_string = sel_dataset + '.csv'
     return csv_string, download_string
 
 
@@ -318,8 +320,8 @@ def update_download_dataset(sel_dataset):
     Output('dataset_metadata', 'children'),
     [Input('sel_dataset', 'value')])
 def print_dataset_metadata(sel_dataset):
-    dff=main_data[main_data['Expt'] == sel_dataset]
-    text=[
+    dff = main_data[main_data['Expt'] == sel_dataset]
+    text = [
         html.Strong('Summary'),
         html.Span(': ' + dff['meaning'][0]),
         html.Br(),
@@ -347,37 +349,37 @@ def print_dataset_metadata(sel_dataset):
      Input('q-val', 'value'),
      Input('sel_dataset_table', "derived_virtual_selected_row_ids")])
 def update_volcano(sel_dataset, log2FC, qval, selected_row_ids):
-    dff=main_data[main_data['Expt'] == sel_dataset]
+    dff = main_data[main_data['Expt'] == sel_dataset]
     if selected_row_ids is None:
-        selected_row_ids=[]
+        selected_row_ids = []
 
     # make qval ticks, replacing the np.nans with inf
-    max_log_qval=np.unique(-np.log10(dff['q-val']))[-2]
-    inf_repl=np.ceil(max_log_qval) + 1
-    dff['qval_plotting']=-np.log10(dff['q-val'])
-    dff['qval_plotting'].replace(np.inf, inf_repl, inplace = True)
-    tickvals=list(np.arange(0, inf_repl + 0.5, 0.5))
-    ticklab=tickvals.copy()
-    ticklab[-1]='Inf'
+    max_log_qval = np.unique(-np.log10(dff['q-val']))[-2]
+    inf_repl = np.ceil(max_log_qval) + 1
+    dff['qval_plotting'] = -np.log10(dff['q-val'])
+    dff['qval_plotting'].replace(np.inf, inf_repl, inplace=True)
+    tickvals = list(np.arange(0, inf_repl + 0.5, 0.5))
+    ticklab = tickvals.copy()
+    ticklab[-1] = 'Inf'
 
-    for_x_ticks=dff['log2FC']
+    for_x_ticks = dff['log2FC']
     # TODO: WHAT is this?
-    for_x_ticks=for_x_ticks.replace([np.inf, -np.inf], np.nan)
-    for_x_ticks=for_x_ticks.dropna()
-    tickvals_x=list(np.arange(int(for_x_ticks.min() - 1),
+    for_x_ticks = for_x_ticks.replace([np.inf, -np.inf], np.nan)
+    for_x_ticks = for_x_ticks.dropna()
+    tickvals_x = list(np.arange(int(for_x_ticks.min() - 1),
                                 int(for_x_ticks.max() + 1), 1))
-    ticklab_x=tickvals_x.copy()
+    ticklab_x = tickvals_x.copy()
 
     # split data into tickeed,unticked_sig, unticked_non_sig
-    ticked=dff['id'].isin(selected_row_ids)
-    ticked_data=dff[ticked]
-    unticked_data=dff[~ticked]
-    generated_filter=(unticked_data['q-val'] <= qval) & (
+    ticked = dff['id'].isin(selected_row_ids)
+    ticked_data = dff[ticked]
+    unticked_data = dff[~ticked]
+    generated_filter = (unticked_data['q-val'] <= qval) & (
         (unticked_data['log2FC'] <= (-log2FC)) | (unticked_data['log2FC'] >= log2FC))
-    sig_data=unticked_data[generated_filter]
-    non_sig_data=unticked_data[~generated_filter]
+    sig_data = unticked_data[generated_filter]
+    non_sig_data = unticked_data[~generated_filter]
 
-    traces=[]
+    traces = []
     traces.append(go.Scatter(x=sig_data['log2FC'],
                              y=sig_data['qval_plotting'],
                              text=sig_data['Rv_ID'],
@@ -432,12 +434,12 @@ def update_volcano(sel_dataset, log2FC, qval, selected_row_ids):
     Output('sel_dataset_table', 'data'),
     [Input('sel_dataset', 'value')])
 def update_dataset_table(sel_dataset):
-    dff=main_data[main_data['Expt'] == sel_dataset]
-    dff=dff[[
+    dff = main_data[main_data['Expt'] == sel_dataset]
+    dff = dff[[
         'Rv_ID', 'gene_name', 'log2FC', 'q-val', 'id']]
-    dff['q-val']=np.round(dff['q-val'], 2)
-    dff['log2FC']=np.round(dff['log2FC'], 2)
-    dff=dff.sort_values(by = 'log2FC')
+    dff['q-val'] = np.round(dff['q-val'], 2)
+    dff['log2FC'] = np.round(dff['log2FC'], 2)
+    dff = dff.sort_values(by='log2FC')
     return dff.to_dict('records')
 
 
@@ -448,9 +450,9 @@ def update_dataset_table(sel_dataset):
                Input('q-val', 'value')])
 def update_cog(sel_dataset, sel_cog, log2FC, qval):
     # filter data based on user inputs
-    selected_data=main_data[main_data['Expt'] == sel_dataset]
+    selected_data = main_data[main_data['Expt'] == sel_dataset]
     if sel_cog == 'Under-represented':
-        sel_subset_filter=(
+        sel_subset_filter = (
             selected_data['q-val'] <= qval) & (selected_data['log2FC'] <= -log2FC)
         colorscale = 'Cividis'
     else:
