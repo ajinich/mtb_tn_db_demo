@@ -18,7 +18,7 @@ from numpy import inf
 
 external_stylesheets = [dbc.themes.UNITED]
 
-std_data = pd.read_csv('https://raw.githubusercontent.com/anishazaveri/mtb_tn_db_demo/master/data/std_data_dash.tsv',
+std_data = pd.read_csv('https://raw.githubusercontent.com/anishazaveri/mtb_tn_db_demo/master/data/standardized_data_dash.tsv',
                        sep='\t', dtype={'Rv_ID': str, 'gene_name': str, 'Description': str, 'Expt': str, 'log2FC': np.float, 'q-val': np.float})
 si_data = pd.read_csv('https://raw.githubusercontent.com/anishazaveri/mtb_tn_db_demo/master/data/si_data_dash.tsv',
                       sep='\t', dtype={'Rv_ID': str, 'gene_name': str, 'Description': str, 'Expt': str, 'log2FC': np.float, 'q-val': np.float})
