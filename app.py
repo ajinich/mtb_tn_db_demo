@@ -18,14 +18,14 @@ from numpy import inf
 
 external_stylesheets = [dbc.themes.UNITED]
 
-std_data = pd.read_csv('https://raw.githubusercontent.com/anishazaveri/mtb_tn_db_demo/master/data/std_data_dash_trimmed.tsv',
+std_data = pd.read_csv('https://raw.githubusercontent.com/anishazaveri/mtb_tn_db_demo/master/data/std_data_dash.tsv',
                        sep='\t', dtype={'Rv_ID': str, 'gene_name': str, 'Description': str, 'Expt': str, 'log2FC': np.float, 'q-val': np.float})
-si_data = pd.read_csv('https://raw.githubusercontent.com/anishazaveri/mtb_tn_db_demo/master/data/si_data_dash_trimmed.tsv',
+si_data = pd.read_csv('https://raw.githubusercontent.com/anishazaveri/mtb_tn_db_demo/master/data/si_data_dash.tsv',
                       sep='\t', dtype={'Rv_ID': str, 'gene_name': str, 'Description': str, 'Expt': str, 'log2FC': np.float, 'q-val': np.float})
 # TODO: make num_replicates into int
 # TODO: fill empty strings in meaning etc with ' ' instead of nan
 metadata = pd.read_csv(
-    'https://raw.githubusercontent.com/anishazaveri/mtb_tn_db_demo/master/data/col_desc_dash_trimmed.tsv', sep='\t')
+    'https://raw.githubusercontent.com/anishazaveri/mtb_tn_db_demo/master/data/col_desc_dash.tsv', sep='\t')
 dict_std_to_si = dict(zip(metadata.column_ID_std, metadata.column_ID_SI))
 dict_si_to_std = dict(zip(metadata.column_ID_SI, metadata.column_ID_std))
 dict_plot_si = dict(zip(metadata.column_ID_SI, metadata.plot_SI_graph))
