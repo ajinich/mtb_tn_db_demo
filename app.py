@@ -87,6 +87,7 @@ def unknown_essential_xy(selected_data, rand_param=0.6):
 
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+server = app.server
 
 navbar = dbc.NavbarSimple([
     dbc.NavItem(dbc.NavLink('Analyze datasets',
