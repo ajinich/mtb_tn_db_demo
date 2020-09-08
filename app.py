@@ -277,8 +277,8 @@ analyze_genes = html.Div([
 about = html.Div([
     html.Label('Desc and credits'),
     html.Br(),
-    html.A('Download raw data',
-           href='https://www.dropbox.com/s/ktx859tq73i8y9m/ORF_details_final.csv?dl=1'),
+    html.A('Download raw data_to_do',
+           href='https://www.google.com'),
     # dbc.Button("Download raw data", href='https://www.dropbox.com/s/ktx859tq73i8y9m/ORF_details_final.csv?dl=1'),
     # html.Label('Download raw_data')
 
