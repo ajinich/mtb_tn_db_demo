@@ -29,6 +29,7 @@ from layout import *
 #####
 # initialize app
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+server = app.server
 
 # create navbar
 navbar = dbc.NavbarSimple([
