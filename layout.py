@@ -229,7 +229,7 @@ about = html.Div([
     html.H5('Raw data'),
     html.Span('Raw data is available '),
     html.A('here',
-           href='https://www.google.com'),
+           href='https://github.com/ajinich/mtb_tn_db_demo/blob/master/raw_data_mtb_tn_db.zip?raw=true'),
     # dbc.Button("Download raw data", href='https://www.dropbox.com/s/ktx859tq73i8y9m/ORF_details_final.csv?dl=1'),
     # html.Label('Download raw_data')
 ])
