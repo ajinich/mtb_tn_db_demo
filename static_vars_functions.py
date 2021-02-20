@@ -135,7 +135,7 @@ def unknown_essential_xy(selected_data):
             df = df_vis[(df_vis.q_val_D.values == qq) &
                         (df_vis.annotation_score.values == ann)]
             # update rv_id list
-            rv_id_list.append(list(df.Rv_ID.values))
+            rv_id_list += list(df.Rv_ID.values)
 
             if df.shape[0] < 30:
                 scatter_size = 6
