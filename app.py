@@ -469,8 +469,9 @@ def update_genes_table(selected_gene, sel_standardized_gene_table):
     merged_data['q-val'] = np.round(merged_data['q-val'], 2)
     merged_data['log2FC'] = np.round(merged_data['log2FC'], 2)
     merged_data = merged_data.sort_values(by='q-val')
-    merged_data['Expt'] = merged_data['Expt'].apply(
-        lambda x: split_expt_name(x))
+    if sel_standardized_gene_table == 'Standardized':
+        merged_data['Expt'] = merged_data['Expt'].apply(
+            lambda x: split_expt_name(x))
     return merged_data.to_dict('records')
 
 
