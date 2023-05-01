@@ -23,9 +23,9 @@ external_stylesheets = [dbc.themes.UNITED]
 
 # read in data
 std_data = pd.read_csv('https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/standardized_data_dash.tsv',
-                       sep='\t', dtype={'Rv_ID': str, 'gene_name': str, 'Description': str, 'Expt': str, 'log2FC': np.float, 'q-val': np.float})
+                       sep='\t', dtype={'Rv_ID': str, 'gene_name': str, 'Description': str, 'Expt': str, 'log2FC': float, 'q-val': float})
 si_data = pd.read_csv('https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/si_data_dash.tsv', sep='\t',
-                      dtype={'Rv_ID': str, 'gene_name': str, 'Description': str, 'Expt': str, 'log2FC': np.float, 'q-val': np.float})
+                      dtype={'Rv_ID': str, 'gene_name': str, 'Description': str, 'Expt': str, 'log2FC': float, 'q-val': float})
 gene_metadata_df = pd.read_csv(
     'https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/gene_metadata_dash.tsv', sep='\t')
 
