@@ -5,10 +5,12 @@ from random import random
 
 import dash
 import dash_bootstrap_components as dbc
-import dash_core_components as dcc
+# import dash_core_components as dcc
+# import dash_html_components as html
+# import dash_table as dt
+from dash import dcc, html
+from dash import dash_table as dt
 import dash_daq as daq
-import dash_html_components as html
-import dash_table as dt
 import numpy as np
 import pandas as pd
 import plotly.graph_objs as go

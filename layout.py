@@ -3,16 +3,19 @@ from static_vars_functions import *
 
 import dash
 import dash_bootstrap_components as dbc
-import dash_core_components as dcc
+# import dash_core_components as dcc
+# import dash_html_components as html
+# import dash_table as dt
 import dash_daq as daq
-import dash_html_components as html
-import dash_table as dt
+from dash import dcc, html
+from dash import dash_table as dt
 import numpy as np
 import pandas as pd
 import plotly.graph_objs as go
 from dash.dependencies import Input, Output
 from dash.exceptions import PreventUpdate
 from numpy import inf
+
 
 # Layout for page analyze datasets
 analyze_datasets = html.Div([dbc.Row([html.Label('Pick a dataset')]),
