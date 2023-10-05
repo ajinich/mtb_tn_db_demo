@@ -351,6 +351,7 @@ def print_dataset_metadata(sel_dataset, sel_standardized):
     else:
         dataset_name = dict_std_to_si.get(sel_dataset, sel_dataset)
         dff = metadata[metadata['column_ID_SI'] == dataset_name]
+    print(dff)
     text = [
         html.Strong('Summary'),
         html.Span(': ' + dff['meaning'].values[0]),
