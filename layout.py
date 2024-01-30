@@ -214,34 +214,34 @@ analyze_genes = html.Div([
 ])
 
 
-# # Layout for page co-essentiality
-# co_essentiality = html.Div([
-#     dbc.Row([html.Label('Pick a gene')]),
-#     dbc.Row([
-#         dbc.Col([
-#             dcc.Dropdown(id='sel_gene',
-#                          options=[{'label': x, 'value': x}
-#                                   for x in unique_genes + unique_Rvs],
-#                          placeholder='Select a gene',
-#                          multi=False,
-#                          searchable=True),
-#             dcc.Dropdown(id='sel_standardized_gene_table',
-#                          options=[
-#                              {'label': x, 'value': x} for x in ['Standardized', 'Original']],
-#                          value='Standardized', clearable=False,
-#                          multi=False)
-#         ]),
-#         dbc.Col([
-#             html.Div(id='gene_metadata')])
-#     ], style={'background-color': '#f5f5f5',
-#               'padding': '30px',
-#               'border-radius': '25px',
-#               'border-color': '#dcdcdc',
-#               'border-width': '2px',
-#               'border-style': 'solid'}),
-#     html.Br(),
-#     html.Br()
-# ])
+# Layout for page co-essentiality
+co_essentiality = html.Div([
+    dbc.Row([html.Label('Pick a gene')]),
+    dbc.Row([
+        dbc.Col([
+            dcc.Dropdown(id='sel_gene',
+                         options=[{'label': x, 'value': x}
+                                  for x in unique_genes + unique_Rvs],
+                         placeholder='Select a gene',
+                         multi=False,
+                         searchable=True),
+            dcc.Dropdown(id='sel_standardized_gene_table',
+                         options=[
+                             {'label': x, 'value': x} for x in ['Standardized', 'Original']],
+                         value='Standardized', clearable=False,
+                         multi=False)
+        ]),
+        dbc.Col([
+            html.Div(id='gene_metadata')])
+    ], style={'background-color': '#f5f5f5',
+              'padding': '30px',
+              'border-radius': '25px',
+              'border-color': '#dcdcdc',
+              'border-width': '2px',
+              'border-style': 'solid'}),
+    html.Br(),
+    html.Br()
+])
 
 
 # Layout for page About
