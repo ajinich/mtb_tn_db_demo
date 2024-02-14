@@ -143,6 +143,7 @@ def update_multiple_outputs_analyze_datasets(sel_dataset, sel_standardized, log2
     return csv_string, download_string, num_significant_text
 
 
+
 @app.callback([Output('volcano', 'figure'),
                Output('volcano', 'config')],
               [Input('sel_dataset', 'value'),
@@ -247,6 +248,7 @@ def update_volcano(sel_dataset, sel_standardized, log2FC, qval, selected_row_ids
                         'tickvals': tickvals, 'fixedrange': True},
                  hovermode='closest'
              )}, config)
+
 
 
 @ app.callback(

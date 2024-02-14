@@ -241,7 +241,41 @@ co_essentiality = html.Div([
               'border-style': 'solid'}),
     html.Br(),
     html.Br()
-])
+    
+    # dbc.Row([
+    #  dbc.Col([
+    #      html.Div([
+    #          html.Label('About this dataset')
+    #      ], style={'textAlign': 'center', 'display': 'block'}),
+    #  ], align='center', width=3),
+    #  dbc.Col([
+    #      html.Div([
+    #          html.Label('Volcano plot')
+    #      ], style={'textAlign': 'center', 'display': 'block'}),
+    #      html.Div(id='num_significant', style={
+    #          'textAlign': 'center', 'display': 'block'}),
+    #  ], align='center', width=5),
+    #  dbc.Col([
+    #      html.Div([
+    #          html.Label('Gene List')
+    #      ], style={'textAlign': 'center', 'display': 'block'}),
+    #  ], align='center', width=3),
+    # ]),
+
+    # dbc.Row([
+    #     dbc.Col([
+    #      html.Div(id='dataset_metadata')], width=3,
+    #      style={'background-color': '#f5f5f5',
+    #             'padding': '30px',
+    #             'border-radius': '25px',
+    #             'border-color': '#dcdcdc',
+    #             'border-width': '2px',
+    #             'border-style': 'solid'}),
+    #     dbc.Col([dcc.Loading(id='loading_volcano', children=dcc.Graph(id='volcano')),
+    #           ],
+    #          width=5, align='center'),
+
+    # ])
 
 
 # Layout for page About
