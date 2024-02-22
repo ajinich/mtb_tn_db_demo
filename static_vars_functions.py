@@ -18,7 +18,8 @@ from dash.dependencies import Input, Output
 from dash.exceptions import PreventUpdate
 from numpy import inf
 import itertools
-
+import json
+from explorer_lib import get_NN12
 
 external_stylesheets = [dbc.themes.UNITED]
 # path_data = '../../data/'
@@ -28,6 +29,7 @@ std_data = pd.read_csv('https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo
                        sep='\t', dtype={'Rv_ID': str, 'gene_name': str, 'Description': str, 'Expt': str, 'log2FC': float, 'q-val': float})
 si_data = pd.read_csv('https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/si_data_dash.tsv', sep='\t',
                       dtype={'Rv_ID': str, 'gene_name': str, 'Description': str, 'Expt': str, 'log2FC': float, 'q-val': float})
+# Changing to local, needs to be changed in github
 gene_metadata_df = pd.read_csv(
     'https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/gene_metadata_dash.tsv', sep='\t')
 
@@ -48,6 +50,7 @@ unique_expts = [x for x in unique_expts if str(x) != 'nan']
 unique_Rvs = sorted(gene_metadata_df.Rv_ID.to_list())
 unique_genes = sorted(gene_metadata_df.gene_name.to_list())
 unique_genes = [x for x in unique_genes if x != '-']
+co_genes = [x for x in unique_Rvs if (gene_metadata_df[gene_metadata_df["Rv_ID"]==x]["coessential_signal"] == "Positive").any()]
 
 # do data wrangling on si and std data for dash requirements
 std_data['id'] = std_data['Rv_ID']
@@ -80,6 +83,26 @@ plotly_buttons_remove = [
     'pan2d', 'lasso2d', 'select2d', 'hoverClosestCartesian', 'hoverCompareCartesian',
     'zoomIn2d', 'zoomOut2d', 'toggleSpikelines', 'autoScale2d', 'zoom2d'
 ]
+
+# Adding information for co-essentiality
+
+df_interact = pd.read_csv("https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/coessential/interaction_pairs.csv")
+df_lfc = pd.read_csv("https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/coessential/values.csv", index_col="Rv_ID")
+
+with open('data/coessential/rvid_to_name.json', 'r') as json_file:
+    dict_rvid_to_name = json.load(json_file)
+
+sel_coesen_table_columns = columns = [
+    {"name": "Lead Gene", "id": "lead_gene"},
+    {"name": "Partner Gene", "id": "partner_gene"},
+    {"name": "P-Value FDR", "id": "p_value_FDR"},
+    {"name": "Sorted Gene Pair", "id": "sorted_gene_pair"},
+    {"name": "Outlier Driven Flag", "id": "outlier_driven_flag"}
+]
+
+data_warped_screens = np.load('data/coessential/warped_screens.npz')
+warped_screens = tuple(data_warped_screens[key] for key in data_warped_screens)
+
 
 
 def empty_plot(label_annotation):
@@ -244,3 +267,23 @@ def update_num_significant(dff, log2FC, qval):
     text = [html.Span(f'Number of neg sig : {num_neg_sig} ; Number of pos sig : {num_pos_sig}'),
             ]
     return text
+
+def get_warped_screen_for_gene(gene_id, df, warped_screens):
+    """
+    Retrieve the warped screen data for a specific gene.
+
+    Parameters:
+    gene_id (str): The identifier of the gene.
+    df (DataFrame): The DataFrame containing gene information.
+    warped_screens (ndarray): The array of warped screens data.
+
+    Returns:
+    ndarray: The warped screen data corresponding to the given gene_id.
+    """
+    # Get the index of the gene in the DataFrame
+    gene_index = df.index.get_loc(gene_id)
+    
+    # Extract the corresponding row from warped_screens
+    gene_warped_screen = warped_screens[gene_index]
+
+    return gene_warped_screen

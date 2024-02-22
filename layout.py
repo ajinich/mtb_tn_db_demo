@@ -221,14 +221,14 @@ co_essentiality = html.Div([
         dbc.Col([
             dcc.Dropdown(id='sel_gene',
                          options=[{'label': x, 'value': x}
-                                  for x in unique_genes + unique_Rvs],
+                                  for x in co_genes],
                          placeholder='Select a gene',
                          multi=False,
                          searchable=True),
-            dcc.Dropdown(id='sel_standardized_gene_table',
+            dcc.Dropdown(id='sel_warped_gene',
                          options=[
-                             {'label': x, 'value': x} for x in ['Standardized', 'Original']],
-                         value='Standardized', clearable=False,
+                             {'label': x, 'value': x} for x in ['Raw Data', 'Warped']],
+                         value='Warped', clearable=False,
                          multi=False)
         ]),
         dbc.Col([
@@ -240,42 +240,34 @@ co_essentiality = html.Div([
               'border-width': '2px',
               'border-style': 'solid'}),
     html.Br(),
-    html.Br()
-    
-    # dbc.Row([
-    #  dbc.Col([
-    #      html.Div([
-    #          html.Label('About this dataset')
-    #      ], style={'textAlign': 'center', 'display': 'block'}),
-    #  ], align='center', width=3),
-    #  dbc.Col([
-    #      html.Div([
-    #          html.Label('Volcano plot')
-    #      ], style={'textAlign': 'center', 'display': 'block'}),
-    #      html.Div(id='num_significant', style={
-    #          'textAlign': 'center', 'display': 'block'}),
-    #  ], align='center', width=5),
-    #  dbc.Col([
-    #      html.Div([
-    #          html.Label('Gene List')
-    #      ], style={'textAlign': 'center', 'display': 'block'}),
-    #  ], align='center', width=3),
-    # ]),
-
-    # dbc.Row([
-    #     dbc.Col([
-    #      html.Div(id='dataset_metadata')], width=3,
-    #      style={'background-color': '#f5f5f5',
-    #             'padding': '30px',
-    #             'border-radius': '25px',
-    #             'border-color': '#dcdcdc',
-    #             'border-width': '2px',
-    #             'border-style': 'solid'}),
-    #     dbc.Col([dcc.Loading(id='loading_volcano', children=dcc.Graph(id='volcano')),
-    #           ],
-    #          width=5, align='center'),
-
-    # ])
+    html.Br(),
+    dbc.Row([
+        dbc.Col([
+            dcc.Loading(id='loading_correlation', children=dcc.Graph(id='correlation_plot'))
+        ])
+       ]),
+    html.Br(),
+    html.Br(),
+    dt.DataTable(id='sel_coesen_table',
+                 columns=sel_coesen_table_columns,
+                 sort_action='native',
+                 page_action='native',
+                 page_size=15,
+                 page_current=0,
+                 style_cell={
+                     'font-family': 'ubuntu',
+                     'font-size': 14,
+                     'whiteSpace': 'normal',
+                     'height': 'auto',
+                     'maxWidth': '120px',
+                     # 'textOverFlow': 'ellipsis',
+                     'textAlign': 'center',
+                     #  'overflow': 'hidden'
+                 },
+                 style_header={'color': '#e95420', 'font-weight': 'bold',
+                               'textAlign': 'center'},
+                 )
+       ])
 
 
 # Layout for page About

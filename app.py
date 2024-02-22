@@ -17,6 +17,8 @@ from dash.dependencies import Input, Output
 from dash.exceptions import PreventUpdate
 from numpy import inf
 import itertools
+from plotly.subplots import make_subplots
+from random import sample
 
 # TODO: reformat analyze genes to remove underscores in header, add ellipsis to overflow, esp for paper
 #####
@@ -65,7 +67,7 @@ app.scripts.config.serve_locally = True
                [Input("url", "pathname")])
 def display_content(path):
     """
-    Takes in path from the URL and returns layout for one of three pages
+    Takes in path from the URL and returns layout for one of four pages
     """
     page_name = app.strip_relative_path(path)
     if page_name == 'analyze_datasets':
@@ -501,12 +503,106 @@ def print_gene_metadata(sel_gene):
         html.Span(list(sel_details['Final Call'])[0]),
         html.Br(),
         html.Strong('Tuberculist functional category: '),
-        html.Span(list(sel_details['tuberculist_category'])[0]),
-        html.Br(),
-        html.Strong('Nearest annotated neighbours: '),
-        html.Span(list(sel_details['NN_joined'])[0])
+        html.Span(list(sel_details['tuberculist_category'])[0])
     ]
     return text
+
+@ app.callback(
+    Output('correlation_plot', 'figure'),  # Corrected the ID to match the dcc.Graph component
+    [Input('sel_gene', 'value'),
+    Input('sel_warped_gene', 'value')]
+)
+
+def correlation_plot_query(sel_gene, sel_warped_gene):
+    
+    list_rvid_NN1, list_rvid_NN2 = get_NN12(sel_gene, df_interact)
+    
+    list_rvid_x = list_rvid_NN2.copy()
+    list_rvid_y = list_rvid_NN2.copy()
+    
+    # Create a set of significant interactions for quick lookup
+    significant_pairs = set(df_interact[['lead_gene', 'partner_gene']].itertuples(index=False, name=None))
+    
+    # Create a dictionary to map gene pairs to p-values
+    p_value_dict = {(row['lead_gene'], row['partner_gene']): row['p_value_FDR'] 
+                    for index, row in df_interact.iterrows()}
+
+
+    # Cut the total plots to 10 in both axis to ensure the plot is shown                
+    if len(list_rvid_x) > 10 and len(list_rvid_y) > 10:
+        list_rvid_x = [sel_gene] + sample(list_rvid_x[1:], 9)
+        list_rvid_y = [sel_gene] + sample(list_rvid_y[1:], 9)
+        title = f"Only Showing 10 Randomized Genes Correlations of {sel_gene}"
+    else: 
+        title = f"Showing all Genes Correlations of {sel_gene}"
+
+    list_gene_names_x = [dict_rvid_to_name[rvid] if rvid in dict_rvid_to_name.keys() else rvid for rvid in list_rvid_x]
+    list_gene_names_y = [dict_rvid_to_name[rvid] if rvid in dict_rvid_to_name.keys() else rvid for rvid in list_rvid_y]
+   
+    # Making the subplots
+     
+    fig = make_subplots(rows=len(list_rvid_x), cols=len(list_rvid_y)) #subplot_titles=[f'{var1} vs {var2}' for var1 in list_rvid for var2 in list_rvid])        
+    
+    for i in range(len(list_rvid_x)):
+        for j in range(len(list_rvid_y)):
+            x_rvid = list_rvid_x[i]
+            y_rvid = list_rvid_y[j]
+
+            if sel_warped_gene == "Warped":
+                x = get_warped_screen_for_gene(x_rvid, df_lfc, warped_screens) # maybe is better to have a dataframe with this values instead of calculating on the fly
+                y = get_warped_screen_for_gene(y_rvid, df_lfc, warped_screens)
+            else:
+                x = df_lfc.loc[list_rvid_x[i]].values
+                y = df_lfc.loc[list_rvid_y[j]].values
+            # Check if the current pair is in the significant interactions
+            is_significant = (x_rvid, y_rvid) in significant_pairs or (y_rvid, x_rvid) in significant_pairs
+            # Set alpha value depending on significance
+            alpha_val = 0.9 if is_significant else 0.2
+            
+            
+            # Creating internal reference of the subplots an
+            xref_int = ((i*len(list_rvid_y))+j)+1
+            yref_int = ((i*len(list_rvid_y))+j)+1
+
+            fig.add_trace(go.Scatter(x=x, y=y, mode='markers',opacity=alpha_val, showlegend=False), row=i+1, col=j+1) # Plus one because plottly uses the starting 1 convention ### row=i+1, col=j+1
+            
+            
+            if is_significant:
+                # Retrieve the p-value for the current gene pair using both orientations
+                # Using the `get` method to avoid KeyError if the pair is not found
+                p_value = p_value_dict.get((list_rvid_x[i], list_rvid_y[j]), 
+                                           p_value_dict.get((list_rvid_y[j], list_rvid_x[i]), None))
+
+                # Format the p-value in scientific notation
+                p_value_text = f'p={p_value:.2e}'
+                
+                # Assuming a standard subplot size, calculate annotation position
+                fig.add_annotation(xref=f'x{xref_int}', 
+                                   yref=f'y{yref_int}',
+                                   x=0.5, y=y.max()+1, showarrow=False,
+                                   text=f'p={p_value:.2e}', font=dict(size=10),
+                                   xanchor='center', yanchor='bottom')
+
+# Making the Annotations of the plots with the p_values
+    for i, rvid in enumerate(list_gene_names_x):
+        fig.update_yaxes(title=list_gene_names_x[i], row=i+1, col=1)
+
+    # Update x-axis labels for the bottom row only
+    for j, rvid in enumerate(list_gene_names_y):
+        fig.update_xaxes(title=list_gene_names_y[j], row=len(list_rvid_y), col=j+1)
+        
+
+    fig.update_layout(title=title, width=1400, height=1400, hovermode='closest')
+
+    return fig
+
+@ app.callback(
+    Output('sel_coesen_table', 'data'),
+    [Input('sel_gene', 'value')])
+
+def update_coesen_table(sel_gene):
+    dff = df_interact[((df_interact["lead_gene"] == sel_gene) | (df_interact["partner_gene"] == sel_gene))]
+    return dff.to_dict('records')
 
 
 if __name__ == '__main__':
