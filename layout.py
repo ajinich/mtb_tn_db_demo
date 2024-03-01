@@ -232,7 +232,20 @@ co_essentiality = html.Div([
                          multi=False)
         ]),
         dbc.Col([
-            html.Div(id='gene_metadata')])
+            html.Div(id='gene_metadata'),
+            html.Br(),
+            html.Div([
+            html.Div([
+                html.Span("Raw Data", style={'color': 'black', 'background-color': '#f0f0f0'}),  # Highlight "Raw Data"
+                    ": This term denotes the unprocessed log2 fold-change values derived straight from TnSeq experiments."
+                    ]),
+            html.Br(),
+            html.Div([
+            html.Span("Warped Data", style={'color': 'black', 'background-color': '#f0f0f0'}),  # Highlight "Warped Data"
+                    ": This refers to the adjusted log2 fold-change values that have been transformed via the Generalized Least Squares method. For a detailed explanation, refer to the study 'Genome-wide co-essentiality analysis in Mycobacterium tuberculosis uncovers an itaconate defense enzyme module' by Jinich et al., published in 2022."
+                    ])
+])
+])
     ], style={'background-color': '#f5f5f5',
               'padding': '30px',
               'border-radius': '25px',

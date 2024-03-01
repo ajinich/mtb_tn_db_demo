@@ -532,9 +532,9 @@ def correlation_plot_query(sel_gene, sel_warped_gene):
     if len(list_rvid_x) > 10 and len(list_rvid_y) > 10:
         list_rvid_x = [sel_gene] + sample(list_rvid_x[1:], 9)
         list_rvid_y = [sel_gene] + sample(list_rvid_y[1:], 9)
-        title = f"Only Showing 10 Randomized Genes Correlations of {sel_gene}"
+        title = f"Showing 10 Randomized genes that have a significant co-essentiality correlation with {sel_gene} (first and second degree correlations)"
     else: 
-        title = f"Showing all Genes Correlations of {sel_gene}"
+        title = f"Showing all genes that have a significant co-essentiality correlation with {sel_gene} (first and second degree correlations) "
 
     list_gene_names_x = [dict_rvid_to_name[rvid] if rvid in dict_rvid_to_name.keys() else rvid for rvid in list_rvid_x]
     list_gene_names_y = [dict_rvid_to_name[rvid] if rvid in dict_rvid_to_name.keys() else rvid for rvid in list_rvid_y]
@@ -601,7 +601,9 @@ def correlation_plot_query(sel_gene, sel_warped_gene):
     [Input('sel_gene', 'value')])
 
 def update_coesen_table(sel_gene):
-    dff = df_interact[((df_interact["lead_gene"] == sel_gene) | (df_interact["partner_gene"] == sel_gene))]
+    list_rvid_NN1, list_rvid_NN2 = get_NN12(sel_gene, df_interact)
+    #dff = df_interact[((df_interact["lead_gene"] == sel_gene) | (df_interact["partner_gene"] == sel_gene))]
+    dff = df_interact[ (df_interact.lead_gene.isin(list_rvid_NN1)) | (df_interact.partner_gene.isin(list_rvid_NN1))].copy()
     return dff.to_dict('records')
 
 
