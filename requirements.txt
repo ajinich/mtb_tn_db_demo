@@ -6,7 +6,6 @@ dash-daq
 dash-html-components
 dash-renderer
 dash-table
-holoviews==1.18.1
 numpy
 pandas
 plotly>=5.0.0
