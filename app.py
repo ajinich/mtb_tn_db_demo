@@ -536,8 +536,8 @@ def correlation_plot_query(sel_gene, sel_warped_gene):
     else: 
         title = f"Showing all genes that have a significant co-essentiality correlation with {sel_gene} (first and second degree correlations) "
 
-    list_gene_names_x = [dict_rvid_to_name[rvid] if rvid in dict_rvid_to_name.keys() else rvid for rvid in list_rvid_x]
-    list_gene_names_y = [dict_rvid_to_name[rvid] if rvid in dict_rvid_to_name.keys() else rvid for rvid in list_rvid_y]
+    list_gene_names_x = [f"{dict_rvid_to_name[rvid]}<br>({rvid})"  if dict_rvid_to_name[rvid] != rvid else f"<br>{rvid}" for rvid in list_rvid_x]
+    list_gene_names_y = [f"{dict_rvid_to_name[rvid]}<br>({rvid})"  if dict_rvid_to_name[rvid] != rvid else f"<br>{rvid}" for rvid in list_rvid_y]
    
     # Making the subplots
      
@@ -604,6 +604,9 @@ def update_coesen_table(sel_gene):
     list_rvid_NN1, list_rvid_NN2 = get_NN12(sel_gene, df_interact)
     #dff = df_interact[((df_interact["lead_gene"] == sel_gene) | (df_interact["partner_gene"] == sel_gene))]
     dff = df_interact[ (df_interact.lead_gene.isin(list_rvid_NN1)) | (df_interact.partner_gene.isin(list_rvid_NN1))].copy()
+    dff["p_value_FDR"] = dff["p_value_FDR"].apply(lambda x: f"{x:.2e}")
+    dff['lead_gene'] = dff['lead_gene'].map(lambda x: f"{dict_rvid_to_name.get(x, x)} ({x})" if dict_rvid_to_name.get(x, x) != x else x)
+    dff['partner_gene'] = dff['partner_gene'].map(lambda x: f"{dict_rvid_to_name.get(x, x)} ({x})" if dict_rvid_to_name.get(x, x) != x else x)
     return dff.to_dict('records')
 
 
