@@ -1,16 +1,19 @@
 import pandas as pd
-import holoviews as hv 
-import bokeh.io
-import bokeh.plotting
-import colorcet as cc
+
 import os
 import re
-from sklearn.preprocessing import normalize
+
 import matplotlib.pyplot as plt 
-import torch
-from sklearn.metrics import pairwise
 import numpy as np
 
+# from sklearn.preprocessing import normalize
+# from sklearn.metrics import pairwise
+# import torch
+
+# import holoviews as hv 
+# import bokeh.io
+# import bokeh.plotting
+# import colorcet as cc
 
 def import_interact_lfc_uniprot(norm, fn_interact, fn_lfc, fn_annot):
     """
