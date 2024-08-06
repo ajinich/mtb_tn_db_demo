@@ -530,8 +530,10 @@ def correlation_plot_query(sel_gene, sel_warped_gene):
 
     # Cut the total plots to 10 in both axis to ensure the plot is shown                
     if len(list_rvid_x) > 10 and len(list_rvid_y) > 10:
-        list_rvid_x = [sel_gene] + sample(list_rvid_x[1:], 9)
-        list_rvid_y = [sel_gene] + sample(list_rvid_y[1:], 9)
+        common_sample = sample(list_rvid_x[1:], 9)
+        list_rvid_x = [sel_gene] + common_sample
+        list_rvid_y = [sel_gene] + common_sample
+        #list_rvid_y = [sel_gene] + sample(list_rvid_y[1:], 9)
         title = f"Showing 10 Randomized genes that have a significant co-essentiality correlation with {sel_gene} (first and second degree correlations)"
     else: 
         title = f"Showing all genes that have a significant co-essentiality correlation with {sel_gene} (first and second degree correlations) "
