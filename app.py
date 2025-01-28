@@ -355,9 +355,13 @@ def print_dataset_metadata(sel_dataset, sel_standardized):
     else:
         dataset_name = dict_std_to_si.get(sel_dataset, sel_dataset)
         dff = metadata[metadata['column_ID_SI'] == dataset_name]
+
+    # To handle nan data:
+    dff = dff.fillna("No information available")
+
     text = [
         html.Strong('Summary'),
-        html.Span(': ' + dff['meaning'].values[0]),
+        html.Span(': ' + str(dff['meaning'].values[0])),
         html.Br(),
         html.Br(),
         html.Strong('Original Publication:'),
@@ -367,7 +371,7 @@ def print_dataset_metadata(sel_dataset, sel_standardized):
         html.Br(),
         html.Br(),
         html.Strong('Mtb strain'),
-        html.Span(': ' + dff['Mtb strain'].values[0]),
+        html.Span(': ' + str(dff['Mtb strain'].values[0])),
         html.Br(),
         html.Br(),
         html.Strong('No of control replicates'),
