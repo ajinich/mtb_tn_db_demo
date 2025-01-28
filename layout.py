@@ -157,7 +157,7 @@ analyze_genes = html.Div([
         dbc.Col([
             dcc.Dropdown(id='sel_gene',
                          options=[{'label': x, 'value': x}
-                                  for x in unique_genes + unique_Rvs],
+                                  for x in unique_Rvs_genes],
                          placeholder='Select a gene',
                          multi=False,
                          searchable=True),

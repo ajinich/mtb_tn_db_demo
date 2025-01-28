@@ -29,9 +29,12 @@ std_data = pd.read_csv('https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo
                        sep='\t', dtype={'Rv_ID': str, 'gene_name': str, 'Description': str, 'Expt': str, 'log2FC': float, 'q-val': float})
 si_data = pd.read_csv('https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/si_data_dash.tsv', sep='\t',
                       dtype={'Rv_ID': str, 'gene_name': str, 'Description': str, 'Expt': str, 'log2FC': float, 'q-val': float})
-# Changing to local, needs to be changed in github
+
+#gene_metadata_df = pd.read_csv(
+#    'https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/gene_metadata_dash.tsv', sep='\t')
+
 gene_metadata_df = pd.read_csv(
-    'https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/gene_metadata_dash.tsv', sep='\t')
+    'data/gene_metadata_dash.tsv', sep='\t')
 
 metadata = pd.read_csv(
     'https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/col_desc_dash.tsv', sep='\t')
@@ -47,10 +50,13 @@ dict_plot_si = dict(zip(metadata.column_ID_SI, metadata.plot_SI_graph))
 unique_expts = list(metadata['column_ID_std'].unique()) + \
     list(metadata['column_ID_SI'].unique())
 unique_expts = [x for x in unique_expts if str(x) != 'nan']
-unique_Rvs = sorted(gene_metadata_df.Rv_ID.to_list())
-unique_genes = sorted(gene_metadata_df.gene_name.to_list())
-unique_genes = [x for x in unique_genes if x != '-']
-co_genes = [x for x in unique_Rvs if (gene_metadata_df[gene_metadata_df["Rv_ID"]==x]["coessential_signal"] == "Positive").any()]
+
+#unique_Rvs = sorted(gene_metadata_df.Rv_ID.to_list())
+#unique_genes = sorted(gene_metadata_df.gene_name.to_list())
+#unique_genes = [x for x in unique_genes if x != '-']
+unique_Rvs_genes =  sorted(gene_metadata_df["normalized_name"].to_list())
+
+co_genes = [x for x in unique_Rvs_genes if (gene_metadata_df[gene_metadata_df["Rv_ID"]==x.split("/")[0]]["coessential_signal"] == "Positive").any()]
 
 # do data wrangling on si and std data for dash requirements
 std_data['id'] = std_data['Rv_ID']

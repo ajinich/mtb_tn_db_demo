@@ -463,10 +463,13 @@ def update_genes_table(selected_gene, sel_standardized_gene_table):
     else:
         dff = si_data.copy()
         metadata_col = 'column_ID_SI'
-    if selected_gene in unique_Rvs:
-        dff = dff[dff['Rv_ID'] == selected_gene]
-    elif selected_gene in unique_genes:
-        dff = dff[dff['gene_name'] == selected_gene]
+    #if selected_gene in unique_Rvs:
+    #    dff = dff[dff['Rv_ID'] == selected_gene]
+    #elif selected_gene in unique_genes:
+    #    dff = dff[dff['gene_name'] == selected_gene]
+    if selected_gene in unique_Rvs_genes:
+        name = selected_gene.split("/")[0]
+        dff = dff[dff['Rv_ID'] == name]
     else:
         raise PreventUpdate
     metadata['paper'] = '[' + metadata['paper_title'] + \
@@ -489,11 +492,13 @@ def update_genes_table(selected_gene, sel_standardized_gene_table):
     Output('gene_metadata', 'children'),
     [Input('sel_gene', 'value')])
 def print_gene_metadata(sel_gene):
-    if sel_gene in unique_Rvs:
-        sel_details = gene_metadata_df[gene_metadata_df['Rv_ID'] == sel_gene]
-    elif sel_gene in unique_genes:
-        sel_details = gene_metadata_df[gene_metadata_df['gene_name'] == sel_gene]
-        # sel_details = si_data[si_data['gene_name'] == sel_gene]
+    #if sel_gene in unique_Rvs:
+    #    sel_details = gene_metadata_df[gene_metadata_df['Rv_ID'] == sel_gene]
+    #elif sel_gene in unique_genes:
+    #    sel_details = gene_metadata_df[gene_metadata_df['gene_name'] == sel_gene]
+    #    sel_details = si_data[si_data['gene_name'] == sel_gene]
+    if sel_gene in unique_Rvs_genes:
+        sel_details = gene_metadata_df[gene_metadata_df['normalized_name'] == sel_gene]
     else:
         return "gene not found"
     text = [
@@ -507,6 +512,8 @@ def print_gene_metadata(sel_gene):
     ]
     return text
 
+# Co-essentiality
+
 @ app.callback(
     Output('correlation_plot', 'figure'),  # Corrected the ID to match the dcc.Graph component
     [Input('sel_gene', 'value'),
@@ -514,6 +521,8 @@ def print_gene_metadata(sel_gene):
 )
 
 def correlation_plot_query(sel_gene, sel_warped_gene):
+
+    sel_gene = sel_gene.split("/")[0]
     
     list_rvid_NN1, list_rvid_NN2 = get_NN12(sel_gene, df_interact)
     
@@ -603,6 +612,7 @@ def correlation_plot_query(sel_gene, sel_warped_gene):
     [Input('sel_gene', 'value')])
 
 def update_coesen_table(sel_gene):
+    sel_gene = sel_gene.split("/")[0]
     list_rvid_NN1, list_rvid_NN2 = get_NN12(sel_gene, df_interact)
     #dff = df_interact[((df_interact["lead_gene"] == sel_gene) | (df_interact["partner_gene"] == sel_gene))]
     dff = df_interact[ (df_interact.lead_gene.isin(list_rvid_NN1)) | (df_interact.partner_gene.isin(list_rvid_NN1))].copy()
