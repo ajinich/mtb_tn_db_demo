@@ -29,20 +29,20 @@ analyze_datasets = html.Div([dbc.Row([html.Label('Pick a dataset')]),
                                                   value=unique_expts[0], clearable=False),
                                      dcc.Dropdown(
                                          id='sel_standardized', clearable=False)
-                                 ], width=4),
+                                 ], width=5),
                                  dbc.Col([
                                      daq.Slider(id='log2FC', min=0, max=6, value=1, step=0.5,
                                                 size=300,
                                                 marks={x: x for x in range(0, 7)}, color='#e95420',
                                                 handleLabel={"showCurrentValue": True, "label": "log2FC"})
-                                 ], width=4),
+                                 ], width=3),
                                  dbc.Col([
                                      daq.Slider(id='q-val', min=0, max=1, value=0.05, step=0.05,
                                                 marks={
                                                     x / 10: x / 10 for x in range(1, 11)},
                                                 size=300, color='#e95420',
                                                 handleLabel={"showCurrentValue": True, "label": "q-val"})
-                                 ], width=4),
+                                 ], width=3),
                                  html.Br(),
                                  html.A('Download this dataset', id='download_dataset', download="", href="",
                                         target="_blank"),
