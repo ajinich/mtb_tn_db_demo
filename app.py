@@ -44,7 +44,9 @@ navbar = dbc.NavbarSimple([
     dbc.NavItem(dbc.NavLink('Co-essentiality',
                             href=app.get_relative_path('/co-essentiality'))),
     dbc.NavItem(dbc.NavLink('About', active=True,
-                            href=app.get_relative_path('/about')))
+                            href=app.get_relative_path('/about'))),
+    dbc.NavItem(dbc.NavLink('README', active=True,
+                            href=app.get_relative_path('/README')))
 ], brand="MtbTnDB", color='primary', light=True)
 
 # app.layout dynamically takes in different content based on the path. See next callback
@@ -78,6 +80,8 @@ def display_content(path):
         return co_essentiality
     if page_name == 'about':
         return about
+    if page_name == "README":
+        return README
 
 
 @ app.callback(
@@ -624,6 +628,39 @@ def update_coesen_table(sel_gene):
     dff['lead_gene'] = dff['lead_gene'].map(lambda x: f"{dict_rvid_to_name.get(x, x)} ({x})" if dict_rvid_to_name.get(x, x) != x else x)
     dff['partner_gene'] = dff['partner_gene'].map(lambda x: f"{dict_rvid_to_name.get(x, x)} ({x})" if dict_rvid_to_name.get(x, x) != x else x)
     return dff.to_dict('records')
+
+# Readme Callbacks
+@ app.callback(
+    Output("adatasets-c", "style"),
+    Input("adatasets", "n_clicks"),
+    prevent_initial_call=True
+)
+def toggle_content_1(n):
+    return {"display": "block"} if n % 2 == 1 else {"display": "none"}
+
+@ app.callback(
+    Output("content-2", "style"),
+    Input("header-2", "n_clicks"),
+    prevent_initial_call=True
+)
+def toggle_content_1(n):
+    return {"display": "block"} if n % 2 == 1 else {"display": "none"}
+
+@ app.callback(
+    Output("content-3", "style"),
+    Input("header-3", "n_clicks"),
+    prevent_initial_call=True
+)
+def toggle_content_1(n):
+    return {"display": "block"} if n % 2 == 1 else {"display": "none"}
+
+@ app.callback(
+    Output("content-4", "style"),
+    Input("header-4", "n_clicks"),
+    prevent_initial_call=True
+)
+def toggle_content_1(n):
+    return {"display": "block"} if n % 2 == 1 else {"display": "none"}
 
 
 if __name__ == '__main__':
