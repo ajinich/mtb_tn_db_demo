@@ -20,13 +20,13 @@ from numpy import inf
 # Layout for page analyze datasets
 analyze_datasets = html.Div([dbc.Row([html.Label('Pick a dataset')]),
                              dbc.Row([
+                                 html.Label("Select by"),
                                  html.Br(),
                                  html.Br(),
                                  dbc.Col([
-                                     dcc.Dropdown(id='sel_dataset',
-                                                  options=[{'label': x, 'value': x}
-                                                           for x in unique_expts],
-                                                  value=unique_expts[0], clearable=False),
+                                     dcc.Dropdown(id="sel_filter", options=[{"label": x, "value": x} for x in unique_filter_col], value=unique_filter_col[0]),
+                                     dcc.Dropdown(id="filter_conditions", clearable=False, value="All"),
+                                     dcc.Dropdown(id='sel_dataset',value=unique_expts[0], clearable=False),
                                      dcc.Dropdown(
                                          id='sel_standardized', clearable=False)
                                  ], width=5),
@@ -224,7 +224,7 @@ co_essentiality = html.Div([
                                   for x in co_genes],
                          placeholder='Select a gene',
                          multi=False,
-                         searchable=True),
+                         searchable=True, value=co_genes[0]),
             dcc.Dropdown(id='sel_warped_gene',
                          options=[
                              {'label': x, 'value': x} for x in ['Raw Data', 'Warped']],
@@ -421,7 +421,7 @@ README = html.Div([
             ]),
         html.Li([
             html.B("Data Accessibility & Download Options", id="header-4", style={"cursor": "pointer", "color": "blue"}),
-            html.Div(["Users can download individual TnSeq screens from the ", html.B("Analyze Datasets"), " tab. The", html.B("About"), " tab provides details on data sources and updates."], id="content-4", style={"display": "none"})
+            html.Div(["Users can download individual TnSeq screens from the ", html.B("Analyze Datasets"), " tab. The ", html.B("About"), " tab provides details on data sources and updates."], id="content-4", style={"display": "none"})
             ])
         ]),
     html.P('The modular design of MtbTnDB supports the addition of future datasets, including conditional essentiality screens using CRISPRi.'),

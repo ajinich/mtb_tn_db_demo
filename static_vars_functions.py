@@ -27,17 +27,25 @@ external_stylesheets = [dbc.themes.UNITED]
 # read in data
 std_data = pd.read_csv('https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/standardized_data_dash.tsv',
                        sep='\t', dtype={'Rv_ID': str, 'gene_name': str, 'Description': str, 'Expt': str, 'log2FC': float, 'q-val': float})
+
+#std_data = pd.read_csv('data/standardized_data_dash.tsv',
+#                       sep='\t', dtype={'Rv_ID': str, 'gene_name': str, 'Description': str, 'Expt': str, 'log2FC': float, 'q-val': float})
+#si_data = pd.read_csv('data/si_data_dash.tsv', sep='\t',
+#                      dtype={'Rv_ID': str, 'gene_name': str, 'Description': str, 'Expt': str, 'log2FC': float, 'q-val': float})
 si_data = pd.read_csv('https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/si_data_dash.tsv', sep='\t',
                       dtype={'Rv_ID': str, 'gene_name': str, 'Description': str, 'Expt': str, 'log2FC': float, 'q-val': float})
 
-#gene_metadata_df = pd.read_csv(
-#    'https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/gene_metadata_dash.tsv', sep='\t')
-
 gene_metadata_df = pd.read_csv(
-    'data/gene_metadata_dash.tsv', sep='\t')
+    'https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/gene_metadata_dash.tsv', sep='\t')
+
+#gene_metadata_df = pd.read_csv(
+#    'data/gene_metadata_dash.tsv', sep='\t')
 
 metadata = pd.read_csv(
     'https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/col_desc_dash.tsv', sep='\t')
+
+#metadata = pd.read_csv(
+#    'data/col_desc_dash.tsv', sep='\t')
 
 # make dictionaries that lookup si_data from std_data and vice versa
 dict_std_to_si = dict(zip(metadata.column_ID_std, metadata.column_ID_SI))
@@ -50,6 +58,8 @@ dict_plot_si = dict(zip(metadata.column_ID_SI, metadata.plot_SI_graph))
 unique_expts = list(metadata['column_ID_std'].unique()) + \
     list(metadata['column_ID_SI'].unique())
 unique_expts = [x for x in unique_expts if str(x) != 'nan']
+unique_filter_col = ["All", "in vitro/cell/in vivo", "in vitro media", "carbon source", "stress", "Microarray or TnSeq", "mouse strain", "cell type", "Mtb strain"]
+
 
 #unique_Rvs = sorted(gene_metadata_df.Rv_ID.to_list())
 #unique_genes = sorted(gene_metadata_df.gene_name.to_list())
@@ -68,8 +78,13 @@ si_data.set_index('id', inplace=True, drop=False)
 # path_annotation = '../../data/annotations/'
 cogs_df = pd.read_csv(
     'https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/annotations/all_cogs.csv')
+
+#cogs_df = pd.read_csv(
+#    'data/annotations/all_cogs.csv')
 cogs_desc = pd.read_csv(
     'https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/annotations/cog_names.csv', header=0, index_col=0, squeeze=True)
+#cogs_desc = pd.read_csv(
+#    'data/annotations/cog_names.csv', header=0, index_col=0, squeeze=True)
 
 
 # select columns of dataset metadata to show in analyse genes table
@@ -94,6 +109,9 @@ plotly_buttons_remove = [
 
 df_interact = pd.read_csv("https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/coessential/interaction_pairs.csv")
 df_lfc = pd.read_csv("https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/coessential/values.csv", index_col="Rv_ID")
+
+#df_interact = pd.read_csv("data/coessential/interaction_pairs.csv")
+#df_lfc = pd.read_csv("data/coessential/values.csv", index_col="Rv_ID")
 
 with open('data/coessential/rvid_to_name.json', 'r') as json_file:
     dict_rvid_to_name = json.load(json_file)

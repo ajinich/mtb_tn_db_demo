@@ -83,6 +83,47 @@ def display_content(path):
     if page_name == "README":
         return README
 
+@ app.callback(
+    [Output("filter_conditions", "options"),
+    Output("filter_conditions", "value")],
+    [Input("sel_filter", "value")])
+def update_filter_conditions(sel_filter):
+    """Function to filter by conditions in a column
+    Args:
+        sel_filter: the column to be selected by the user, e.g carbon source
+    Returns
+        list: List of options for
+        str: Default Value to display from the options
+    """ 
+    if sel_filter == "All":
+        return [{'label': x, 'value': x} for x in [sel_filter]], sel_filter
+    else:
+        values_conditions = metadata[sel_filter].dropna().unique()
+        values_conditions = values_conditions[values_conditions != "-"]
+        return [{'label': x, 'value': x} for x in values_conditions], 'All'
+
+@ app.callback(
+    [Output("sel_dataset", "options"),
+    Output("sel_dataset", "value")],
+    [Input("filter_conditions", "value")])
+def update_papers_conditions(filter_conditions):
+    """Function to filter by conditions in a column
+    Args:
+        sel_filter: the column to be selected by the user, e.g carbon source
+    Returns
+        list: List of options for
+        str: Default Value to display from the options
+    """ 
+    if filter_conditions == "All":
+        metadata_nf = list(metadata['column_ID_std'].unique()) + list(metadata['column_ID_SI'].unique())
+        metadata_nf =  [x for x in metadata_nf if str(x) != 'nan']
+        return [{'label': x, 'value': x} for x in metadata_nf], metadata_nf[0]
+    else:
+        matching_rows = metadata[metadata.isin([filter_conditions]).any(axis=1)]
+        metadata_p = list(matching_rows['column_ID_std'].unique()) + list(matching_rows['column_ID_SI'].unique())
+        metadata_p = unique_expts = [x for x in metadata_p if str(x) != 'nan']
+        return [{'label': x, 'value': x} for x in metadata_p], "None"
+
 
 @ app.callback(
     [Output('sel_standardized', 'options'),
@@ -664,4 +705,4 @@ def toggle_content_1(n):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
