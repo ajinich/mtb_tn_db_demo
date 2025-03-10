@@ -177,15 +177,23 @@ analyze_genes = html.Div([
               'border-style': 'solid'}),
     html.Br(),
     html.Br(),
+    dbc.Row([
+        dbc.Col([
     dt.DataTable(id='sel_gene_table',
                  columns=sel_gene_table_columns,
                  sort_action='native',
                  page_action='native',
                  page_size=15,
                  page_current=0,
+                 style_table={
+                    'width': '100%',
+                    'margin-left': '0px',
+                    'display': 'flex',
+                    'justify-content': 'flex-start'
+                 },
                  style_cell={
                      'font-family': 'ubuntu',
-                     'font-size': 14,
+                     'font-size': 12,
                      'whiteSpace': 'normal',
                      'height': 'auto',
                      'maxWidth': '120px',
@@ -210,6 +218,8 @@ analyze_genes = html.Div([
                      {'if': {'column_id': 'paper'}, 'width': '300px'},
                  ],
                  )
+        ])
+    ])
 
 ])
 

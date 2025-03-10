@@ -517,8 +517,10 @@ def update_genes_table(selected_gene, sel_standardized_gene_table):
     #elif selected_gene in unique_genes:
     #    dff = dff[dff['gene_name'] == selected_gene]
     if selected_gene in unique_Rvs_genes:
+        local_track_df = track_df.copy()
         name = selected_gene.split("/")[0]
         dff = dff[dff['Rv_ID'] == name]
+        local_track_df = local_track_df[local_track_df["Rv_ID"] == name]
     else:
         raise PreventUpdate
     metadata['paper'] = '[' + metadata['paper_title'] + \
@@ -528,10 +530,20 @@ def update_genes_table(selected_gene, sel_standardized_gene_table):
     metadata_trunc = metadata[[metadata_col] + metadata_cols_display]
     metadata_trunc = metadata_trunc.rename(columns={metadata_col: 'Expt'})
     merged_data = dff.merge(metadata_trunc, how='left', on='Expt')
+    #merge data with track view
+    if sel_standardized_gene_table == 'Standardized':
+        merged_data["Expt_"] = merged_data["Expt"].str.split("_vs_").str[0].str.lower()
+        merged_data = merged_data.merge(local_track_df[["Track View", "Expt_", "Rv_ID"]], how="left", on=["Expt_", "Rv_ID"])
+        merged_data["Track View"] = '['+ "Track View" + '](' + merged_data["Track View"] + ')'
+        merged_data["Track View"].fillna("No Track Available", inplace=True)
+        # print(merged_data[["Expt","Expt_", "Rv_ID", "Track View"]])
+    else: 
+        merged_data["Track View"] = "No Track Available"     
     merged_data['q-val'] = np.round(merged_data['q-val'], 2)
     merged_data['log2FC'] = np.round(merged_data['log2FC'], 2)
     merged_data = merged_data.sort_values(by='q-val')
     if sel_standardized_gene_table == 'Standardized':
+        # print(merged_data["Expt"].head(5))
         merged_data['Expt'] = merged_data['Expt'].apply(
             lambda x: split_expt_name(x))
     return merged_data.to_dict('records')
