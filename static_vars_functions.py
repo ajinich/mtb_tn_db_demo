@@ -25,16 +25,27 @@ external_stylesheets = [dbc.themes.UNITED]
 # path_data = '../../data/'
 
 # read in data
-std_data = pd.read_csv('https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/standardized_data_dash.tsv',
+#std_data = pd.read_csv('https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/standardized_data_dash.tsv',
+#                       sep='\t', dtype={'Rv_ID': str, 'gene_name': str, 'Description': str, 'Expt': str, 'log2FC': float, 'q-val': float})
+
+std_data = pd.read_csv('data/standardized_data_dash.tsv',
                        sep='\t', dtype={'Rv_ID': str, 'gene_name': str, 'Description': str, 'Expt': str, 'log2FC': float, 'q-val': float})
-si_data = pd.read_csv('https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/si_data_dash.tsv', sep='\t',
+si_data = pd.read_csv('data/si_data_dash.tsv', sep='\t',
                       dtype={'Rv_ID': str, 'gene_name': str, 'Description': str, 'Expt': str, 'log2FC': float, 'q-val': float})
-# Changing to local, needs to be changed in github
+#si_data = pd.read_csv('https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/si_data_dash.tsv', sep='\t',
+#                      dtype={'Rv_ID': str, 'gene_name': str, 'Description': str, 'Expt': str, 'log2FC': float, 'q-val': float})
+
+#gene_metadata_df = pd.read_csv(
+#    'https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/gene_metadata_dash.tsv', sep='\t')
+
 gene_metadata_df = pd.read_csv(
-    'https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/gene_metadata_dash.tsv', sep='\t')
+    'data/gene_metadata_dash.tsv', sep='\t')
+
+#metadata = pd.read_csv(
+#    'https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/col_desc_dash.tsv', sep='\t')
 
 metadata = pd.read_csv(
-    'https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/col_desc_dash.tsv', sep='\t')
+    'data/col_desc_dash.tsv', sep='\t')
 
 # make dictionaries that lookup si_data from std_data and vice versa
 dict_std_to_si = dict(zip(metadata.column_ID_std, metadata.column_ID_SI))
@@ -47,10 +58,15 @@ dict_plot_si = dict(zip(metadata.column_ID_SI, metadata.plot_SI_graph))
 unique_expts = list(metadata['column_ID_std'].unique()) + \
     list(metadata['column_ID_SI'].unique())
 unique_expts = [x for x in unique_expts if str(x) != 'nan']
-unique_Rvs = sorted(gene_metadata_df.Rv_ID.to_list())
-unique_genes = sorted(gene_metadata_df.gene_name.to_list())
-unique_genes = [x for x in unique_genes if x != '-']
-co_genes = [x for x in unique_Rvs if (gene_metadata_df[gene_metadata_df["Rv_ID"]==x]["coessential_signal"] == "Positive").any()]
+unique_filter_col = ["All", "in vitro/cell/in vivo", "in vitro media", "carbon source", "stress", "Microarray or TnSeq", "mouse strain", "cell type", "Mtb strain"]
+
+
+#unique_Rvs = sorted(gene_metadata_df.Rv_ID.to_list())
+#unique_genes = sorted(gene_metadata_df.gene_name.to_list())
+#unique_genes = [x for x in unique_genes if x != '-']
+unique_Rvs_genes =  sorted(gene_metadata_df["normalized_name"].to_list())
+
+co_genes = [x for x in unique_Rvs_genes if (gene_metadata_df[gene_metadata_df["Rv_ID"]==x.split("/")[0]]["coessential_signal"] == "Positive").any()]
 
 # do data wrangling on si and std data for dash requirements
 std_data['id'] = std_data['Rv_ID']
@@ -60,10 +76,15 @@ si_data.set_index('id', inplace=True, drop=False)
 
 # read in cog annotations, cogs_desc should be read as a pd.Series
 # path_annotation = '../../data/annotations/'
+#cogs_df = pd.read_csv(
+#    'https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/annotations/all_cogs.csv')
+
 cogs_df = pd.read_csv(
-    'https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/annotations/all_cogs.csv')
+    'data/annotations/all_cogs.csv')
+#cogs_desc = pd.read_csv(
+#    'https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/annotations/cog_names.csv', header=0, index_col=0, squeeze=True)
 cogs_desc = pd.read_csv(
-    'https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/annotations/cog_names.csv', header=0, index_col=0, squeeze=True)
+    'data/annotations/cog_names.csv', header=0, index_col=0, squeeze=True)
 
 
 # select columns of dataset metadata to show in analyse genes table
@@ -78,6 +99,10 @@ sel_gene_table_columns = [{"name": i,
 sel_gene_table_columns.append(
     {"name": 'paper', "id": 'paper', "presentation": 'markdown'})
 
+# show paper column as markdown so that html links work for track view
+sel_gene_table_columns.append(
+    {"name": 'Trac View', "id": 'Track View', "presentation": 'markdown'})
+
 # list plotly buttons to remove from all graphs
 plotly_buttons_remove = [
     'pan2d', 'lasso2d', 'select2d', 'hoverClosestCartesian', 'hoverCompareCartesian',
@@ -86,8 +111,11 @@ plotly_buttons_remove = [
 
 # Adding information for co-essentiality
 
-df_interact = pd.read_csv("https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/coessential/interaction_pairs.csv")
-df_lfc = pd.read_csv("https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/coessential/values.csv", index_col="Rv_ID")
+#df_interact = pd.read_csv("https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/coessential/interaction_pairs.csv")
+#df_lfc = pd.read_csv("https://raw.githubusercontent.com/ajinich/mtb_tn_db_demo/master/data/coessential/values.csv", index_col="Rv_ID")
+
+df_interact = pd.read_csv("data/coessential/interaction_pairs.csv")
+df_lfc = pd.read_csv("data/coessential/values.csv", index_col="Rv_ID")
 
 with open('data/coessential/rvid_to_name.json', 'r') as json_file:
     dict_rvid_to_name = json.load(json_file)
@@ -103,6 +131,8 @@ sel_coesen_table_columns = columns = [
 data_warped_screens = np.load('data/coessential/warped_screens.npz')
 warped_screens = tuple(data_warped_screens[key] for key in data_warped_screens)
 
+# Adding data for trackviews
+track_df = pd.read_csv("data/track_view_urls.tsv.gz", sep="\t", compression="gzip")
 
 
 def empty_plot(label_annotation):

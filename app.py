@@ -44,7 +44,9 @@ navbar = dbc.NavbarSimple([
     dbc.NavItem(dbc.NavLink('Co-essentiality',
                             href=app.get_relative_path('/co-essentiality'))),
     dbc.NavItem(dbc.NavLink('About', active=True,
-                            href=app.get_relative_path('/about')))
+                            href=app.get_relative_path('/about'))),
+    dbc.NavItem(dbc.NavLink('README', active=True,
+                            href=app.get_relative_path('/README')))
 ], brand="MtbTnDB", color='primary', light=True)
 
 # app.layout dynamically takes in different content based on the path. See next callback
@@ -78,6 +80,49 @@ def display_content(path):
         return co_essentiality
     if page_name == 'about':
         return about
+    if page_name == "README":
+        return README
+
+@ app.callback(
+    [Output("filter_conditions", "options"),
+    Output("filter_conditions", "value")],
+    [Input("sel_filter", "value")])
+def update_filter_conditions(sel_filter):
+    """Function to filter by conditions in a column
+    Args:
+        sel_filter: the column to be selected by the user, e.g carbon source
+    Returns
+        list: List of options for
+        str: Default Value to display from the options
+    """ 
+    if sel_filter == "All":
+        return [{'label': x, 'value': x} for x in [sel_filter]], sel_filter
+    else:
+        values_conditions = metadata[sel_filter].dropna().unique()
+        values_conditions = values_conditions[values_conditions != "-"]
+        return [{'label': x, 'value': x} for x in values_conditions], 'All'
+
+@ app.callback(
+    [Output("sel_dataset", "options"),
+    Output("sel_dataset", "value")],
+    [Input("filter_conditions", "value")])
+def update_papers_conditions(filter_conditions):
+    """Function to filter by conditions in a column
+    Args:
+        sel_filter: the column to be selected by the user, e.g carbon source
+    Returns
+        list: List of options for
+        str: Default Value to display from the options
+    """ 
+    if filter_conditions == "All":
+        metadata_nf = list(metadata['column_ID_std'].unique()) + list(metadata['column_ID_SI'].unique())
+        metadata_nf =  [x for x in metadata_nf if str(x) != 'nan']
+        return [{'label': x, 'value': x} for x in metadata_nf], metadata_nf[0]
+    else:
+        matching_rows = metadata[metadata.isin([filter_conditions]).any(axis=1)]
+        metadata_p = list(matching_rows['column_ID_std'].unique()) + list(matching_rows['column_ID_SI'].unique())
+        metadata_p = unique_expts = [x for x in metadata_p if str(x) != 'nan']
+        return [{'label': x, 'value': x} for x in metadata_p], "None"
 
 
 @ app.callback(
@@ -355,9 +400,13 @@ def print_dataset_metadata(sel_dataset, sel_standardized):
     else:
         dataset_name = dict_std_to_si.get(sel_dataset, sel_dataset)
         dff = metadata[metadata['column_ID_SI'] == dataset_name]
+
+    # To handle nan data:
+    dff = dff.fillna("No information available")
+
     text = [
         html.Strong('Summary'),
-        html.Span(': ' + dff['meaning'].values[0]),
+        html.Span(': ' + str(dff['meaning'].values[0])),
         html.Br(),
         html.Br(),
         html.Strong('Original Publication:'),
@@ -367,7 +416,7 @@ def print_dataset_metadata(sel_dataset, sel_standardized):
         html.Br(),
         html.Br(),
         html.Strong('Mtb strain'),
-        html.Span(': ' + dff['Mtb strain'].values[0]),
+        html.Span(': ' + str(dff['Mtb strain'].values[0])),
         html.Br(),
         html.Br(),
         html.Strong('No of control replicates'),
@@ -463,10 +512,15 @@ def update_genes_table(selected_gene, sel_standardized_gene_table):
     else:
         dff = si_data.copy()
         metadata_col = 'column_ID_SI'
-    if selected_gene in unique_Rvs:
-        dff = dff[dff['Rv_ID'] == selected_gene]
-    elif selected_gene in unique_genes:
-        dff = dff[dff['gene_name'] == selected_gene]
+    #if selected_gene in unique_Rvs:
+    #    dff = dff[dff['Rv_ID'] == selected_gene]
+    #elif selected_gene in unique_genes:
+    #    dff = dff[dff['gene_name'] == selected_gene]
+    if selected_gene in unique_Rvs_genes:
+        local_track_df = track_df.copy()
+        name = selected_gene.split("/")[0]
+        dff = dff[dff['Rv_ID'] == name]
+        local_track_df = local_track_df[local_track_df["Rv_ID"] == name]
     else:
         raise PreventUpdate
     metadata['paper'] = '[' + metadata['paper_title'] + \
@@ -476,10 +530,20 @@ def update_genes_table(selected_gene, sel_standardized_gene_table):
     metadata_trunc = metadata[[metadata_col] + metadata_cols_display]
     metadata_trunc = metadata_trunc.rename(columns={metadata_col: 'Expt'})
     merged_data = dff.merge(metadata_trunc, how='left', on='Expt')
+    #merge data with track view
+    if sel_standardized_gene_table == 'Standardized':
+        merged_data["Expt_"] = merged_data["Expt"].str.split("_vs_").str[0].str.lower()
+        merged_data = merged_data.merge(local_track_df[["Track View", "Expt_", "Rv_ID"]], how="left", on=["Expt_", "Rv_ID"])
+        merged_data["Track View"] = '['+ "Track View" + '](' + merged_data["Track View"] + ')'
+        merged_data["Track View"].fillna("No Track Available", inplace=True)
+        # print(merged_data[["Expt","Expt_", "Rv_ID", "Track View"]])
+    else: 
+        merged_data["Track View"] = "No Track Available"     
     merged_data['q-val'] = np.round(merged_data['q-val'], 2)
     merged_data['log2FC'] = np.round(merged_data['log2FC'], 2)
     merged_data = merged_data.sort_values(by='q-val')
     if sel_standardized_gene_table == 'Standardized':
+        # print(merged_data["Expt"].head(5))
         merged_data['Expt'] = merged_data['Expt'].apply(
             lambda x: split_expt_name(x))
     return merged_data.to_dict('records')
@@ -489,11 +553,13 @@ def update_genes_table(selected_gene, sel_standardized_gene_table):
     Output('gene_metadata', 'children'),
     [Input('sel_gene', 'value')])
 def print_gene_metadata(sel_gene):
-    if sel_gene in unique_Rvs:
-        sel_details = gene_metadata_df[gene_metadata_df['Rv_ID'] == sel_gene]
-    elif sel_gene in unique_genes:
-        sel_details = gene_metadata_df[gene_metadata_df['gene_name'] == sel_gene]
-        # sel_details = si_data[si_data['gene_name'] == sel_gene]
+    #if sel_gene in unique_Rvs:
+    #    sel_details = gene_metadata_df[gene_metadata_df['Rv_ID'] == sel_gene]
+    #elif sel_gene in unique_genes:
+    #    sel_details = gene_metadata_df[gene_metadata_df['gene_name'] == sel_gene]
+    #    sel_details = si_data[si_data['gene_name'] == sel_gene]
+    if sel_gene in unique_Rvs_genes:
+        sel_details = gene_metadata_df[gene_metadata_df['normalized_name'] == sel_gene]
     else:
         return "gene not found"
     text = [
@@ -507,6 +573,8 @@ def print_gene_metadata(sel_gene):
     ]
     return text
 
+# Co-essentiality
+
 @ app.callback(
     Output('correlation_plot', 'figure'),  # Corrected the ID to match the dcc.Graph component
     [Input('sel_gene', 'value'),
@@ -514,6 +582,8 @@ def print_gene_metadata(sel_gene):
 )
 
 def correlation_plot_query(sel_gene, sel_warped_gene):
+
+    sel_gene = sel_gene.split("/")[0]
     
     list_rvid_NN1, list_rvid_NN2 = get_NN12(sel_gene, df_interact)
     
@@ -603,6 +673,7 @@ def correlation_plot_query(sel_gene, sel_warped_gene):
     [Input('sel_gene', 'value')])
 
 def update_coesen_table(sel_gene):
+    sel_gene = sel_gene.split("/")[0]
     list_rvid_NN1, list_rvid_NN2 = get_NN12(sel_gene, df_interact)
     #dff = df_interact[((df_interact["lead_gene"] == sel_gene) | (df_interact["partner_gene"] == sel_gene))]
     dff = df_interact[ (df_interact.lead_gene.isin(list_rvid_NN1)) | (df_interact.partner_gene.isin(list_rvid_NN1))].copy()
@@ -611,6 +682,39 @@ def update_coesen_table(sel_gene):
     dff['partner_gene'] = dff['partner_gene'].map(lambda x: f"{dict_rvid_to_name.get(x, x)} ({x})" if dict_rvid_to_name.get(x, x) != x else x)
     return dff.to_dict('records')
 
+# Readme Callbacks
+@ app.callback(
+    Output("adatasets-c", "style"),
+    Input("adatasets", "n_clicks"),
+    prevent_initial_call=True
+)
+def toggle_content_1(n):
+    return {"display": "block"} if n % 2 == 1 else {"display": "none"}
+
+@ app.callback(
+    Output("content-2", "style"),
+    Input("header-2", "n_clicks"),
+    prevent_initial_call=True
+)
+def toggle_content_1(n):
+    return {"display": "block"} if n % 2 == 1 else {"display": "none"}
+
+@ app.callback(
+    Output("content-3", "style"),
+    Input("header-3", "n_clicks"),
+    prevent_initial_call=True
+)
+def toggle_content_1(n):
+    return {"display": "block"} if n % 2 == 1 else {"display": "none"}
+
+@ app.callback(
+    Output("content-4", "style"),
+    Input("header-4", "n_clicks"),
+    prevent_initial_call=True
+)
+def toggle_content_1(n):
+    return {"display": "block"} if n % 2 == 1 else {"display": "none"}
+
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
