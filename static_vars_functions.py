@@ -101,7 +101,7 @@ sel_gene_table_columns.append(
 
 # show paper column as markdown so that html links work for track view
 sel_gene_table_columns.append(
-    {"name": 'Trac View', "id": 'Track View', "presentation": 'markdown'})
+    {"name": 'Track     View', "id": 'Track View', "presentation": 'markdown'})
 
 # list plotly buttons to remove from all graphs
 plotly_buttons_remove = [

@@ -322,6 +322,8 @@ README = html.Div([
     html.P(['MtbTnDB (',
         html.A("www.mtbtndb.app", href="https://www.mtbtndb.app", target="_blank"),
         ") is an online database designed to facilitate the querying and analysis of standardized Mycobacterium tuberculosis (Mtb) Transposon Sequencing (TnSeq) datasets. The platform enables researchers to explore genetic fitness and coessentiality relationships using three primary modes of interaction:"]),
+    html.Br(),
+    "Click on each section heading to expand and learn more details about the specific functionality.",
     html.Ul([
         html.Li([
             html.B("Analyze Datasets:", id="adatasets", style={"cursor": "pointer", "color": "blue"}),

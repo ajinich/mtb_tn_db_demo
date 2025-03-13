@@ -1,4 +1,4 @@
-name: /home/richiam/anaconda3/envs/dash_gen
+name: dash_gen
 channels:
   - defaults
   - conda-forge
