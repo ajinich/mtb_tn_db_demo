@@ -1,0 +1,5 @@
+name: dash_gen
+channels:
+  - defaults
+  - conda-forge
+prefix: /home/richiam/mambaforge/envs/dash_gen
