@@ -330,7 +330,7 @@ README = html.Div([
             " View and explore TnSeq experimental screens.",
             html.Br(),
             html.Div([
-                html.P(["The", html.B("Analyze Datasets"), " tab provides an interactive and information-rich overview of selected TnSeq experimental screens. Each dataset represents a pairwise comparison between an experimental condition and a control."]),
+                html.P(["The ", html.B("Analyze Datasets"), " tab provides an interactive and information-rich overview of selected TnSeq experimental screens. Each dataset represents a pairwise comparison between an experimental condition and a control."]),
                 html.B("Features & Functionality"),
                     html.Ul([
                         html.Li([
@@ -353,8 +353,17 @@ README = html.Div([
                                 html.Li([html.B("COG Functional Category Bar Plot"), ": Highlights enriched Clusters of Orthologous Groups (COG) categories."]),
                                 html.Li([html.B("Conditional Essentiality vs. Annotation Status Bubble Plot"),": Identifies genes that are conditionally essential but poorly annotated, guiding follow-up studies."])
                                 ])]),
+                        html.Li([
+                            html.B("Filter By:"),
+                            html.Ul([
+                                html.Li("Select a specific condition to filter the dataset, e.g., by in vitro media."),
+                                html.Li("Choose the specific condition you wish to view studies for, e.g., 7H10."),
+                                html.Li("Select the  relevant dataset")
+                                ])
+                            ]),
                         ]),
                 html.B("Example Use Case"),
+                html.Br(),
                 html.Br(),
                 "A researcher studying Mtb under a stress condition can use the Analyze Datasets tab to:",
                 html.Br(),
