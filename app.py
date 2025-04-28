@@ -43,8 +43,6 @@ navbar = dbc.NavbarSimple([
                             href=app.get_relative_path('/analyze_genes'))),
     dbc.NavItem(dbc.NavLink('Co-essentiality',
                             href=app.get_relative_path('/co-essentiality'))),
-    dbc.NavItem(dbc.NavLink('About', active=True,
-                            href=app.get_relative_path('/about'))),
     dbc.NavItem(dbc.NavLink('README', active=True,
                             href=app.get_relative_path('/README')))
 ], brand="MtbTnDB", color='primary', light=True)
@@ -78,8 +76,6 @@ def display_content(path):
         return analyze_genes
     if page_name == "co-essentiality":
         return co_essentiality
-    if page_name == 'about':
-        return about
     if page_name == "README":
         return README
 

@@ -294,28 +294,7 @@ co_essentiality = html.Div([
 
 
 # Layout for page About
-about = html.Div([
-    html.Span('TnSeq has been used extensively in '),
-    html.Span('M. tuberculosis', style={'font-style': 'italic'}),
-    html.Span(' genetic research and identification of gene essentiality (TnSeq) profiles is important for predicting gene function. However, these profiles are buried across dozens of research papers within supplementary materials which makes querying them cumbersome. The MtbTnDB solves this problem by building a central repository of TnSeq screens performed in '),
-    html.Span('M. tuberculosis', style={'font-style': 'italic'}),
-    html.Span(
-        ', and allows users easy access to data through an interactive web-app.'),
-    html.Br(),
-    html.Br(),
-    html.H5('Contact'),
-    html.Span("For bug reports and data submissions, contact "),
-    html.A('Adrian Jinich',
-           href="mailto:adj2010@med.cornell.edu", target='_blank'),
-    html.Br(),
-    html.Br(),
-    html.H5('Raw data'),
-    html.Span('Raw data is available '),
-    html.A('here',
-           href='https://github.com/ajinich/mtb_tn_db_demo/blob/master/raw_data_mtb_tn_db.zip?raw=true'),
-    # dbc.Button("Download raw data", href='https://www.dropbox.com/s/ktx859tq73i8y9m/ORF_details_final.csv?dl=1'),
-    # html.Label('Download raw_data')
-])
+
 
 # Layout for page README
 README = html.Div([
@@ -446,6 +425,19 @@ README = html.Div([
             ])
         ]),
     html.P('The modular design of MtbTnDB supports the addition of future datasets, including conditional essentiality screens using CRISPRi.'),
+    html.B("Explore Webpage and Data"),
+    html.Ul([
+        html.Li(
+            html.A("GitHub Repository", href="https://github.com/ajinich/mtb_tn_db_demo", target="_blank")
+            ),
+        html.Li(
+            html.A("Raw Data", href="https://zenodo.org/records/15284946", target="_blank"))
+        ]),
     html.B("Conclusion"),
-    html.P("MtbTnDB provides a powerful and intuitive interface for exploring Mtb TnSeq data. By integrating interactive visualizations, standardized fitness data, and coessentiality analysis, the platform enables researchers to uncover gene functions, essentiality patterns, and functional relationships in Mtb. Future updates will expand dataset coverage, incorporating new methodologies such as CRISPRi-based screens.")
+    html.P("MtbTnDB provides a powerful and intuitive interface for exploring Mtb TnSeq data. By integrating interactive visualizations, standardized fitness data, and coessentiality analysis, the platform enables researchers to uncover gene functions, essentiality patterns, and functional relationships in Mtb. Future updates will expand dataset coverage, incorporating new methodologies such as CRISPRi-based screens."),
+    html.B("Contact"),
+    html.P([
+        "For bug reports and data submissions, contact ",
+        html.A("Adrian Jinich", href="mailto:ajinich@health.ucsd.edu")
+        ])
 ])
