@@ -703,13 +703,13 @@ def toggle_content_1(n):
 def toggle_content_1(n):
     return {"display": "block"} if n % 2 == 1 else {"display": "none"}
 
-@ app.callback(
-    Output("content-4", "style"),
-    Input("header-4", "n_clicks"),
-    prevent_initial_call=True
-)
-def toggle_content_1(n):
-    return {"display": "block"} if n % 2 == 1 else {"display": "none"}
+#@ app.callback(
+#    Output("content-4", "style"),
+#    Input("header-4", "n_clicks"),
+#    prevent_initial_call=True
+#)
+#def toggle_content_1(n):
+#    return {"display": "block"} if n % 2 == 1 else {"display": "none"}
 
 
 if __name__ == '__main__':

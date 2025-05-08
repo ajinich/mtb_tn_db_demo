@@ -419,13 +419,13 @@ README = html.Div([
                 ], id="content-3", style={"display": "none"})
 
             ]),
-        html.Li([
-            html.B("Data Accessibility & Download Options", id="header-4", style={"cursor": "pointer", "color": "blue"}),
-            html.Div(["Users can download individual TnSeq screens from the ", html.B("Analyze Datasets"), " tab. The ", html.B("About"), " tab provides details on data sources and updates."], id="content-4", style={"display": "none"})
-            ])
+        #html.Li([
+        #    html.B("Data Accessibility & Download Options", id="header-4", style={"cursor": "pointer", "color": "blue"}),
+        #    html.Div(["Users can download individual TnSeq screens from the ", html.B("Analyze Datasets"), " tab. The ", html.B("About"), " tab provides details on data sources and updates."], id="content-4", style={"display": "none"})
+        #    ])
         ]),
     html.P('The modular design of MtbTnDB supports the addition of future datasets, including conditional essentiality screens using CRISPRi.'),
-    html.B("Explore Webpage and Data"),
+    html.B("Code and Data"),
     html.Ul([
         html.Li(
             html.A("GitHub Repository", href="https://github.com/ajinich/mtb_tn_db_demo", target="_blank")
